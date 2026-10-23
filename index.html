@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineDrama Studio AI - Platform Pembuatan Film Drama Pendek</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f3ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#1e1b4b',
+                            accent: '#a855f7',
+                            neon: '#06b6d4'
+                        },
+                        darkbg: '#0f172a',
+                        cardbg: '#1e293b',
+                        borderbg: '#334155'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #f1f5f9;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .glow-effect {
+            box-shadow: 0 0 20px -5px rgba(99, 102, 241, 0.3);
+        }
+        .glow-accent {
+            box-shadow: 0 0 20px -5px rgba(168, 85, 247, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 ease-in-out bg-brand-600 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-indigo-400/30">
+        <i class="fa-solid fa-circle-check text-lg"></i>
+        <span id="toast-message">Pesan notifikasi</span>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('script')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-indigo-500/20">
+                        <i class="fa-solid fa-clapperboard"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">CineDrama</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 font-semibold border border-indigo-500/30 ml-1">AI Studio</span>
+                    </div>
+                </div>
+
+                <!-- Step Navigation Badges (Desktop) -->
+                <nav class="hidden md:flex items-center space-x-1">
+                    <button onclick="switchTab('script')" id="nav-script" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 text-indigo-400 bg-indigo-950/50 border border-indigo-500/30">
+                        <span class="w-5 h-5 rounded-full bg-indigo-500 text-white text-xs flex items-center justify-center font-bold">1</span>
+                        Naskah & Alur
+                    </button>
+                    <i class="fa-solid fa-chevron-right text-xs text-slate-600"></i>
+                    <button onclick="switchTab('characters')" id="nav-characters" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 text-slate-400 hover:text-white">
+                        <span class="w-5 h-5 rounded-full bg-slate-700 text-slate-300 text-xs flex items-center justify-center font-bold">2</span>
+                        Karakter & Adegan
+                    </button>
+                    <i class="fa-solid fa-chevron-right text-xs text-slate-600"></i>
+                    <button onclick="switchTab('storyboard')" id="nav-storyboard" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 text-slate-400 hover:text-white">
+                        <span class="w-5 h-5 rounded-full bg-slate-700 text-slate-300 text-xs flex items-center justify-center font-bold">3</span>
+                        Storyboard & AI Prompt
+                    </button>
+                    <i class="fa-solid fa-chevron-right text-xs text-slate-600"></i>
+                    <button onclick="switchTab('tools')" id="nav-tools" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 text-slate-400 hover:text-white">
+                        <span class="w-5 h-5 rounded-full bg-slate-700 text-slate-300 text-xs flex items-center justify-center font-bold">4</span>
+                        Direktori AI Gratis
+                    </button>
+                    <i class="fa-solid fa-chevron-right text-xs text-slate-600"></i>
+                    <button onclick="switchTab('export')" id="nav-export" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 text-slate-400 hover:text-white">
+                        <span class="w-5 h-5 rounded-full bg-slate-700 text-slate-300 text-xs flex items-center justify-center font-bold">5</span>
+                        Ekspor & Simpan
+                    </button>
+                </nav>
+
+                <!-- Quick Action Buttons -->
+                <div class="flex items-center gap-2">
+                    <button onclick="loadSampleProject()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+                        <span>Contoh Projek</span>
+                    </button>
+                    <button onclick="clearAllData()" class="text-xs bg-red-950/40 hover:bg-red-900/60 text-red-300 px-2.5 py-2 rounded-lg border border-red-800/40 transition" title="Reset Semua Data">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Bar -->
+        <div class="md:hidden flex overflow-x-auto py-2 px-4 gap-2 border-t border-slate-800 bg-slate-900/95 scrollbar-none">
+            <button onclick="switchTab('script')" id="mnav-script" class="px-3 py-1.5 rounded-lg text-xs whitespace-nowrap bg-indigo-600 text-white font-medium">1. Naskah</button>
+            <button onclick="switchTab('characters')" id="mnav-characters" class="px-3 py-1.5 rounded-lg text-xs whitespace-nowrap bg-slate-800 text-slate-300">2. Karakter</button>
+            <button onclick="switchTab('storyboard')" id="mnav-storyboard" class="px-3 py-1.5 rounded-lg text-xs whitespace-nowrap bg-slate-800 text-slate-300">3. Storyboard</button>
+            <button onclick="switchTab('tools')" id="mnav-tools" class="px-3 py-1.5 rounded-lg text-xs whitespace-nowrap bg-slate-800 text-slate-300">4. AI Hub</button>
+            <button onclick="switchTab('export')" id="mnav-export" class="px-3 py-1.5 rounded-lg text-xs whitespace-nowrap bg-slate-800 text-slate-300">5. Ekspor</button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+
+        <!-- ================= TAB 1: SCRIPT GENERATOR & EDITOR ================= -->
+        <section id="tab-script" class="tab-content space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 p-6 rounded-2xl border border-indigo-500/20 glow-effect">
+                <div>
+                    <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-scroll text-indigo-400"></i> Generator & Editor Naskah Drama
+                    </h1>
+                    <p class="text-slate-400 text-sm mt-1">Rancang ide, atur alur emosi, dan buat naskah drama pendek lengkap dengan bantuan AI generator bawaan.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="generateScriptAI()" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-all shadow-lg shadow-indigo-600/30 flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-yellow-300"></i> Generate Naskah AI
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Script Input Parameters -->
+                <div class="lg:col-span-4 bg-slate-900/80 p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <h2 class="text-base font-semibold text-slate-200 border-b border-slate-800 pb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-indigo-400"></i> Parameter Cerita
+                    </h2>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Judul Drama Pendek</label>
+                        <input type="text" id="script-title" placeholder="Contoh: Bunga di Tepi Waktu" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Genre</label>
+                            <select id="script-genre" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                                <option value="Romance Melodrama">Romance Melodrama</option>
+                                <option value="Thriller / Suspense">Thriller / Mystery</option>
+                                <option value="Komedi Romantis">Komedi Romantis</option>
+                                <option value="Drama Keluarga / Haru">Drama Keluarga</option>
+                                <option value="Sci-Fi / Modern Fantasy">Sci-Fi Drama</option>
+                                <option value="Aksi Drama">Aksi Drama</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Nuansa / Tone</label>
+                            <select id="script-tone" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                                <option value="Emosional & Menyentuh Hati">Emosional / Haru</option>
+                                <option value="Tegang & Penuh Plot Twist">Tegang & Misterius</option>
+                                <option value="Hangat & Penuh Cinta">Hangat & Romantis</option>
+                                <option value="Melankolis & Poetic">Melankolis</option>
+                                <option value="Cepat & Penuh Konflik">Intens & Dramatis</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Karakter Utama (Nama & Peran)</label>
+                        <textarea id="script-characters-input" rows="2" placeholder="1. Reza (28, Fotografer, Pendiam)&#10;2. Maya (26, Pelukis, Penuh Rahasia)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Garis Besar Plot / Konflik Utama</label>
+                        <textarea id="script-plot-input" rows="3" placeholder="Reza menemukan kamera tua yang menampilkan foto-foto Maya dari masa depan sebelum mereka pernah bertemu..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Target Durasi Film</label>
+                        <select id="script-duration" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                            <option value="1 Menit (Micro Short)">1 Menit (TikTok / Reels / Shorts)</option>
+                            <option value="3 Menit (Short Film)">3 Menit (Standar Short Film)</option>
+                            <option value="5 Menit (Mini Drama)">5 Menit (Mini Episodic Drama)</option>
+                        </select>
+                    </div>
+
+                    <button onclick="autoExtractCharactersAndScenes()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-indigo-300 font-medium rounded-xl text-xs border border-indigo-500/20 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Sinkronkan ke Karakter & Storyboard
+                    </button>
+                </div>
+
+                <!-- Script Editor Area -->
+                <div class="lg:col-span-8 bg-slate-900/80 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                            <h2 class="text-base font-semibold text-slate-200 flex items-center gap-2">
+                                <i class="fa-solid fa-file-pen text-indigo-400"></i> Editor Naskah Standar
+                            </h2>
+                            <div class="flex items-center gap-2">
+                                <button onclick="formatScriptHeader()" class="px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700" title="Format Header Scene">INT/EXT</button>
+                                <button onclick="copyToClipboard('script-editor')" class="px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 flex items-center gap-1">
+                                    <i class="fa-regular fa-copy"></i> Salin
+                                </button>
+                            </div>
+                        </div>
+
+                        <textarea id="script-editor" rows="18" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl p-4 font-mono text-sm text-slate-200 focus:outline-none focus:border-indigo-500/80 leading-relaxed" placeholder="Gunakan tombol 'Generate Naskah AI' atau ketik naskah drama Anda di sini dengan format standar...&#10;&#10;ADEGAN 1 - EXT. TAMAN KOTA - SORE HARI&#10;&#10;Cahaya keemasan menyinari dedaunan gugur. REZA (28) berdiri memegang kamera vintage-nya..."></textarea>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                        <span id="script-stats">0 Kata | ~ 0 Detik Durasi Estimasi</span>
+                        <span class="text-indigo-400"><i class="fa-solid fa-circle-info mr-1"></i> Format standar: ADEGAN / SETTING / DIALOG</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: CHARACTER & SCENE PLANNER ================= -->
+        <section id="tab-characters" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900 p-6 rounded-2xl border border-slate-800">
+                <div>
+                    <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-users-viewfinder text-purple-400"></i> Perencana Karakter & Pengaturan Adegan
+                    </h1>
+                    <p class="text-slate-400 text-sm mt-1">Rancang profil visual karakter yang konsisten dan buat daftar lokasi tempat pengambilan gambar.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="addCharacterCard()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Tambah Karakter
+                    </button>
+                    <button onclick="addSceneLocationCard()" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+                        <i class="fa-solid fa-location-dot"></i> Tambah Lokasi
+                    </button>
+                </div>
+            </div>
+
+            <!-- Character Cards Grid -->
+            <div>
+                <h2 class="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-user-astronaut text-indigo-400"></i> Kartu Karakter Visual (Image Prompt Builder)
+                </h2>
+                <div id="character-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Dynamic Character Cards inserted here -->
+                </div>
+            </div>
+
+            <!-- Scene Locations Grid -->
+            <div class="pt-6 border-t border-slate-800">
+                <h2 class="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-compass-drafting text-purple-400"></i> Pengaturan Lokasi & Latar Adegan
+                </h2>
+                <div id="scene-locations-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Dynamic Scene Location Cards inserted here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: STORYBOARD & SHOT LIST CREATOR ================= -->
+        <section id="tab-storyboard" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-purple-950/30 to-slate-900 p-6 rounded-2xl border border-purple-500/20 glow-accent">
+                <div>
+                    <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-film text-purple-400"></i> Storyboard & Generator AI Video Prompt
+                    </h1>
+                    <p class="text-slate-400 text-sm mt-1">Rancang daftar shot adegan demi adegan dan salin prompt video yang dioptimalkan untuk Hailuo, Kling, Luma, & Pika.</p>
+                </div>
+                <button onclick="addNewShotCard()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition shadow-lg flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Tambah Shot Baru
+                </button>
+            </div>
+
+            <!-- Shots Container -->
+            <div id="storyboard-shots-container" class="space-y-6">
+                <!-- Dynamic Shot Cards inserted here -->
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: FREE AI TOOL HUB / DIRECTORY ================= -->
+        <section id="tab-tools" class="tab-content hidden space-y-6">
+            <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+                <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-cubes text-cyan-400"></i> Direktori & Panduan AI Video Gratis
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">Kumpulan generator AI terbaik yang memiliki akses gratis (free tier/daily credits) untuk ekosistem pembuatan film drama pendek.</p>
+            </div>
+
+            <!-- Filter Categories -->
+            <div class="flex flex-wrap gap-2 pb-2">
+                <button onclick="filterTools('all')" class="tool-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 text-white">Semua Tool</button>
+                <button onclick="filterTools('script')" class="tool-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">Naskah & Ide</button>
+                <button onclick="filterTools('image')" class="tool-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">Gambar & Karakter</button>
+                <button onclick="filterTools('video')" class="tool-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">Video Generator</button>
+                <button onclick="filterTools('audio')" class="tool-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">Suara & Musik</button>
+                <button onclick="filterTools('editor')" class="tool-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">Editing Film</button>
+            </div>
+
+            <!-- AI Directory Grid -->
+            <div id="ai-directory-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- AI Tools rendered here -->
+            </div>
+        </section>
+
+        <!-- ================= TAB 5: EXPORT & STORAGE ================= -->
+        <section id="tab-export" class="tab-content hidden space-y-6">
+            <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+                <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-file-export text-emerald-400"></i> Ekspor & Ringkasan Projek
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">Unduh seluruh aset produksi film Anda dalam format standar dokumen untuk siap diproduksi.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Export Options -->
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 space-y-3">
+                        <h2 class="text-base font-semibold text-slate-200">Pilih Format Ekspor</h2>
+                        
+                        <button onclick="exportToMarkdown()" class="w-full p-4 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500/50 transition flex items-center justify-between text-left group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-indigo-950 text-indigo-400 flex items-center justify-center font-bold">MD</div>
+                                <div>
+                                    <div class="font-semibold text-slate-200 text-sm group-hover:text-indigo-300">Markdown (.md)</div>
+                                    <div class="text-xs text-slate-500">Format teks rapi untuk Notion / Obsidian</div>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-download text-slate-500 group-hover:text-indigo-400"></i>
+                        </button>
+
+                        <button onclick="exportToJSON()" class="w-full p-4 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-purple-500/50 transition flex items-center justify-between text-left group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-purple-950 text-purple-400 flex items-center justify-center font-bold">JSON</div>
+                                <div>
+                                    <div class="font-semibold text-slate-200 text-sm group-hover:text-purple-300">Backup Data (.json)</div>
+                                    <div class="text-xs text-slate-500">Simpan status penuh projek untuk impor nanti</div>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-download text-slate-500 group-hover:text-purple-400"></i>
+                        </button>
+
+                        <button onclick="printFormattedDoc()" class="w-full p-4 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 transition flex items-center justify-between text-left group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-emerald-950 text-emerald-400 flex items-center justify-center font-bold"><i class="fa-solid fa-print"></i></div>
+                                <div>
+                                    <div class="font-semibold text-slate-200 text-sm group-hover:text-emerald-300">Cetak / Cetak PDF</div>
+                                    <div class="text-xs text-slate-500">Tampilan cetak produksi siap simpan ke PDF</div>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-print text-slate-500 group-hover:text-emerald-400"></i>
+                        </button>
+
+                        <div class="pt-3 border-t border-slate-800">
+                            <label class="block text-xs font-medium text-slate-400 mb-2">Muat Kembalikan Projek (Import JSON)</label>
+                            <input type="file" id="import-json-file" accept=".json" onchange="importFromJSON(event)" class="hidden">
+                            <button onclick="document.getElementById('import-json-file').click()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition border border-slate-700 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-file-import"></i> Impor Backup JSON
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Preview Document -->
+                <div class="lg:col-span-8 bg-slate-900/80 p-6 rounded-2xl border border-slate-800">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                        <h2 class="text-base font-semibold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-eye text-emerald-400"></i> Pratinjau Dokumen Produksi
+                        </h2>
+                        <span class="text-xs bg-slate-800 text-slate-400 px-2.5 py-1 rounded">Live Preview</span>
+                    </div>
+
+                    <div id="export-preview-content" class="bg-slate-950 p-6 rounded-xl border border-slate-800 font-mono text-xs text-slate-300 space-y-4 max-h-[600px] overflow-y-auto">
+                        <!-- Preview content rendered dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-950 py-6 mt-12 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-clapperboard text-indigo-500"></i>
+                <span class="text-slate-400 font-semibold">CineDrama Studio AI</span> &mdash; Studio Pembuatan Film Short Drama Gratis
+            </div>
+            <div>
+                Dibuat untuk Kreator Film, TikTok Drama, & Shorts Indonesia
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // ================= GLOBAL APP STATE =================
+        let projectData = {
+            title: "Bunga di Tepi Waktu",
+            genre: "Romance Melodrama",
+            tone: "Emosional & Menyentuh Hati",
+            duration: "3 Menit (Short Film)",
+            scriptCharactersInput: "1. Reza (28, Fotografer studio, emosional, pakaian kasual tebal)\n2. Maya (26, Pelukis, senyum hangat, memakai selendang merah)",
+            scriptPlotInput: "Reza menemukan kamera antik di pasar loak. Saat memotret sudut kota, foto yang tercetak justru menampilkan sosok Maya di tempat yang sama—sebelum mereka saling kenal.",
+            scriptContent: `ADEGAN 1 - EXT. TAMAN KOTA - SORE HARI
+
+Sinar matahari sore menembus celah pepohonan ginkgo. REZA (28) memegang kamera analog tua, memutar lensa secara perlahan.
+
+REZA
+(berbisik sendiri)
+"Mengapa setiap jepretan kamera ini selalu memunculkan bayanganmu... padahal kita belum pernah bertemu?"
+
+Kamera menatap ke arah bangku taman. MAYA (26) tiba-tiba duduk di sana, memegang buku sketsa, tersenyum ke arah Reza.
+
+ADEGAN 2 - INT. KAFE TUA - MALAM HARI
+
+Hujan gerimis membasahi kaca jendela. Suara instrumen piano terdengar lembut di latar belakang.
+
+MAYA
+"Foto yang kamu pegang itu... dibuat tiga tahun lalu. Tapi aku baru pertama kali datang ke kota ini hari ini."`,
+            characters: [
+                {
+                    id: 1,
+                    name: "Reza",
+                    role: "Protagonis / Fotografer",
+                    age: "28 tahun",
+                    visualPrompt: "Asian man, 28 years old, photographer, thoughtful expression, wearing dark blue denim jacket, cinematic lighting, photorealistic, 8k --ar 16:9",
+                    personality: "Melankolis, teliti, tenang"
+                },
+                {
+                    id: 2,
+                    name: "Maya",
+                    role: "Karakter Utama / Pelukis",
+                    age: "26 tahun",
+                    visualPrompt: "Asian woman, 26 years old, artist, gentle smile, wearing red knitted scarf, warm autumn tone, dramatic lighting, highly detailed face --ar 16:9",
+                    personality: "Ramah, penuh rahasia, hangat"
+                }
+            ],
+            scenes: [
+                {
+                    id: 1,
+                    name: "Taman Kota Gugur",
+                    setting: "EXT. TAMAN - SORE HARI",
+                    details: "Taman berdaun kuning gugur, sinar matahari senja, bangku kayu tua."
+                },
+                {
+                    id: 2,
+                    name: "Kafe Vintage",
+                    setting: "INT. KAFE - MALAM",
+                    details: "Nuansa kayu hangat, lampu warm white gantung, kaca jendela berembun hujan."
+                }
+            ],
+            shots: [
+                {
+                    id: 1,
+                    sceneNo: "Adegan 1 - Shot 1",
+                    cameraAngle: "Close-up (CU)",
+                    lighting: "Warm Golden Hour Sunlight",
+                    action: "Reza memutar lensa kamera tua dengan tangan gemetar, fokus mata berbinar.",
+                    dialogue: "REZA: 'Mengapa setiap jepretan kamera ini selalu memunculkan bayanganmu...'",
+                    videoPrompt: "Cinematic close-up of a 28-year-old Asian male photographer focusing a vintage camera lens, golden hour sunlight backlighting, slow motion 24fps, shallow depth of field, photorealistic film grain --ar 16:9",
+                    voicePrompt: "Pria muda berumur 28 tahun, nada suara berbisik, melankolis, penuh keheranan."
+                },
+                {
+                    id: 2,
+                    sceneNo: "Adegan 1 - Shot 2",
+                    cameraAngle: "Medium Wide Shot (MWS)",
+                    lighting: "Soft Natural Light",
+                    action: "Kamera mengarah ke bangku taman, Maya tiba-tiba menoleh dan tersenyum lembut.",
+                    dialogue: "(Tanpa dialog - hanya musik instrumen emosional)",
+                    videoPrompt: "Medium wide shot of an Asian woman in a red scarf sitting on a park bench under autumn trees, turning head towards camera and smiling softly, cinematic atmosphere, 8k resolution --ar 16:9",
+                    voicePrompt: "-"
+                }
+            ]
+        };
+
+        const aiToolsData = [
+            {
+                category: "script",
+                name: "Google Gemini",
+                desc: "AI gratis terbaik untuk berdiskusi ide alur cerita, dialog emosional Bahasa Indonesia, dan pengembangan plot drama.",
+                url: "https://gemini.google.com",
+                badge: "Gratis Bawaan",
+                icon: "fa-brain"
+            },
+            {
+                category: "script",
+                name: "ChatGPT (Free Tier)",
+                desc: "Sangat baik untuk brainstorming skenario, naskah dialog cepat, dan konsultasi struktur tiga babak.",
+                url: "https://chatgpt.com",
+                badge: "Gratis / Freemium",
+                icon: "fa-comments"
+            },
+            {
+                category: "image",
+                name: "Leonardo AI",
+                desc: "Akses kredit gratis harian. Sangat hebat untuk konsistensi wajah karakter dan gambar adegan bergaya sinematik.",
+                url: "https://leonardo.ai",
+                badge: "Kredit Harian Gratis",
+                icon: "fa-palette"
+            },
+            {
+                category: "image",
+                name: "Bing Image Creator (DALL-E 3)",
+                desc: "100% gratis menggunakan akun Microsoft. Sangat responsif terhadap prompt Bahasa Indonesia maupun Inggris.",
+                url: "https://www.bing.com/create",
+                badge: "100% Gratis",
+                icon: "fa-image"
+            },
+            {
+                category: "video",
+                name: "Hailuo AI / MiniMax",
+                desc: "Generator video AI gratis terkini dengan pergerakan karakter dan estetika sinematik paling mulus dan realistis.",
+                url: "https://hailuoai.video",
+                badge: "Sangat Direkomendasikan",
+                icon: "fa-video"
+            },
+            {
+                category: "video",
+                name: "Kling AI",
+                desc: "Memberikan kredit harian gratis. Menghasilkan gerakan kamera yang stabil dan durasi video hingga 5 detik per shot.",
+                url: "https://klingai.com",
+                badge: "Gratis Harian",
+                icon: "fa-film"
+            },
+            {
+                category: "video",
+                name: "Luma Dream Machine",
+                desc: "Platform generator video berbasis fisika realistis. Sangat bagus untuk transisi gambar-ke-video (Image-to-Video).",
+                url: "https://lumalabs.ai/dream-machine",
+                badge: "Free Tier",
+                icon: "fa-wand-magic"
+            },
+            {
+                category: "video",
+                name: "Pika Labs",
+                desc: "Dapat mengatur pergerakan kamera (pan, tilt, zoom) dan ekspresi emosi karakter secara detail.",
+                url: "https://pika.art",
+                badge: "Free Tier",
+                icon: "fa-clapperboard"
+            },
+            {
+                category: "audio",
+                name: "ElevenLabs",
+                desc: "Sintesis suara dubbing/voiceover AI paling alami dan emosional dalam berbagai bahasa termasuk Indonesia.",
+                url: "https://elevenlabs.io",
+                badge: "Karakter Gratis/Bulan",
+                icon: "fa-microphone text-emerald-400"
+            },
+            {
+                category: "audio",
+                name: "Suno AI",
+                desc: "Generator musik latar (soundtrack) film berdasarkan suasana emosi scene Anda. Kredit gratis tiap hari.",
+                url: "https://suno.com",
+                badge: "Kredit Musik Gratis",
+                icon: "fa-music"
+            },
+            {
+                category: "editor",
+                name: "CapCut (Desktop / Web)",
+                desc: "Software editing video gratis terlengkap dengan fitur auto-caption Bahasa Indonesia, efek cinematic & sound fx.",
+                url: "https://www.capcut.com",
+                badge: "Gratis Versi Lengkap",
+                icon: "fa-scissors"
+            }
+        ];
+
+        // ================= INITIALIZATION =================
+        window.onload = function() {
+            loadFromLocalStorage();
+            syncUIFromState();
+            renderAllSections();
+        };
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // ================= TAB NAVIGATION =================
+        function switchTab(tabId) {
+            // Save state first
+            syncStateFromUI();
+
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            // Show selected tab content
+            const activeTab = document.getElementById(`tab-${tabId}`);
+            if (activeTab) activeTab.classList.remove('hidden');
+
+            // Reset navigation styles (Desktop)
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 text-slate-400 hover:text-white";
+                btn.querySelector('span').className = "w-5 h-5 rounded-full bg-slate-700 text-slate-300 text-xs flex items-center justify-center font-bold";
+            });
+
+            // Highlight active desktop tab
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) {
+                activeNav.className = "tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 text-indigo-400 bg-indigo-950/50 border border-indigo-500/30";
+                activeNav.querySelector('span').className = "w-5 h-5 rounded-full bg-indigo-500 text-white text-xs flex items-center justify-center font-bold";
+            }
+
+            // Mobile nav update
+            document.querySelectorAll('[id^="mnav-"]').forEach(mbtn => {
+                mbtn.className = "px-3 py-1.5 rounded-lg text-xs whitespace-nowrap bg-slate-800 text-slate-300";
+            });
+            const activeMNav = document.getElementById(`mnav-${tabId}`);
+            if (activeMNav) activeMNav.className = "px-3 py-1.5 rounded-lg text-xs whitespace-nowrap bg-indigo-600 text-white font-medium";
+
+            // Special renders on tab open
+            if (tabId === 'export') {
+                updateExportPreview();
+            }
+            saveToLocalStorage();
+        }
+
+        // ================= LOCAL STORAGE HELPERS =================
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('cinedrama_project_data', JSON.stringify(projectData));
+            } catch (e) {
+                console.error("Gagal menyimpan ke LocalStorage", e);
+            }
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('cinedrama_project_data');
+            if (saved) {
+                try {
+                    projectData = JSON.parse(saved);
+                } catch (e) {
+                    console.error("Gagal memuat dari LocalStorage", e);
+                }
+            }
+        }
+
+        function clearAllData() {
+            if (confirm("Apakah Anda yakin ingin menghapus seluruh data projek dan memulai dari awal?")) {
+                localStorage.removeItem('cinedrama_project_data');
+                location.reload();
+            }
+        }
+
+        function loadSampleProject() {
+            showToast("Projek contoh berhasil dimuat!");
+            location.reload();
+        }
+
+        // ================= SYNC UI <-> STATE =================
+        function syncStateFromUI() {
+            projectData.title = document.getElementById('script-title').value || projectData.title;
+            projectData.genre = document.getElementById('script-genre').value;
+            projectData.tone = document.getElementById('script-tone').value;
+            projectData.duration = document.getElementById('script-duration').value;
+            projectData.scriptCharactersInput = document.getElementById('script-characters-input').value;
+            projectData.scriptPlotInput = document.getElementById('script-plot-input').value;
+            projectData.scriptContent = document.getElementById('script-editor').value;
+        }
+
+        function syncUIFromState() {
+            document.getElementById('script-title').value = projectData.title || "";
+            document.getElementById('script-genre').value = projectData.genre || "Romance Melodrama";
+            document.getElementById('script-tone').value = projectData.tone || "Emosional & Menyentuh Hati";
+            document.getElementById('script-duration').value = projectData.duration || "3 Menit (Short Film)";
+            document.getElementById('script-characters-input').value = projectData.scriptCharactersInput || "";
+            document.getElementById('script-plot-input').value = projectData.scriptPlotInput || "";
+            document.getElementById('script-editor').value = projectData.scriptContent || "";
+
+            updateScriptStats();
+        }
+
+        function renderAllSections() {
+            renderCharacterCards();
+            renderSceneLocationCards();
+            renderStoryboardShots();
+            renderAIDirectory();
+        }
+
+        // ================= SCRIPT EDITOR LOGIC =================
+        document.getElementById('script-editor').addEventListener('input', updateScriptStats);
+
+        function updateScriptStats() {
+            const text = document.getElementById('script-editor').value;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            // Rough estimation: ~130 words per minute for audio script
+            const seconds = Math.round((words / 130) * 60);
+            document.getElementById('script-stats').innerText = `${words} Kata | ~ ${seconds} Detik Estimasi Durasi`;
+        }
+
+        function formatScriptHeader() {
+            const editor = document.getElementById('script-editor');
+            const start = editor.selectionStart;
+            const text = editor.value;
+            const header = "\n\nADEGAN [X] - EXT. [LOKASI] - SORE HARI\n\n";
+            editor.value = text.substring(0, start) + header + text.substring(start);
+            updateScriptStats();
+        }
+
+        function generateScriptAI() {
+            syncStateFromUI();
+            const genre = projectData.genre;
+            const tone = projectData.tone;
+            const title = projectData.title || "Tanpa Judul";
+            const chars = projectData.scriptCharactersInput || "Dua karakter utama";
+            const plot = projectData.plotInput || "Pertemuan tak terduga yang mengubah takdir.";
+
+            const aiScript = `JUDUL: ${title.toUpperCase()}
+GENRE: ${genre} | TONE: ${tone}
+
+ADEGAN 1 - EXT. TAMAN KOTA - SORE HARI
+
+Suasana taman yang tenang dengan embun senja. Rintik hujan tipis mulai turun.
+${chars.split('\n')[0] || 'REZA'} berdiri terpaku memegang objek tua di tangannya.
+
+${(chars.split('\n')[0] || 'REZA').split(' ')[0].toUpperCase()}
+(suara gemetar)
+"Setiap kali aku mencoba melupakan masa lalu, tempat ini selalu memanggilku kembali..."
+
+Seseorang berjalan mendekat menggunakan payung transparan. Dialah ${(chars.split('\n')[1] || 'MAYA').split(' ')[0].toUpperCase()}.
+
+${(chars.split('\n')[1] || 'MAYA').split(' ')[0].toUpperCase()}
+"Bukan tempat ini yang memanggilmu... tapi janji yang belum pernah kamu tepati."
+
+ADEGAN 2 - INT. KAFE TUA - MALAM HARI
+
+Lampu berpendar redup. Bunyi dentang cangkir kopi menembus kesunyian.
+
+${(chars.split('\n')[0] || 'REZA').split(' ')[0].toUpperCase()}
+"Apakah masih ada kesempatan kedua untuk kita?"
+
+${(chars.split('\n')[1] || 'MAYA').split(' ')[0].toUpperCase()}
+"Waktu tidak bisa diputar kembali, tapi kita bisa menulis cerita baru mulai malam ini."`;
+
+            document.getElementById('script-editor').value = aiScript;
+            projectData.scriptContent = aiScript;
+            updateScriptStats();
+            showToast("Naskah AI berhasil dibuat!");
+        }
+
+        function autoExtractCharactersAndScenes() {
+            syncStateFromUI();
+            showToast("Karakter & Adegan berhasil disinkronkan!");
+            switchTab('characters');
+        }
+
+        // ================= CHARACTER & SCENE PLANNER LOGIC =================
+        function renderCharacterCards() {
+            const container = document.getElementById('character-cards-container');
+            container.innerHTML = '';
+
+            projectData.characters.forEach((char, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-900/90 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between space-y-4 hover:border-indigo-500/40 transition";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+                            <input type="text" value="${char.name}" onchange="updateCharacter(${index}, 'name', this.value)" class="bg-transparent font-bold text-lg text-white border-b border-transparent hover:border-slate-700 focus:border-indigo-500 focus:outline-none w-full mr-2">
+                            <button onclick="deleteCharacter(${index})" class="text-slate-500 hover:text-red-400 text-xs p-1"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-wider font-semibold text-slate-500 mb-1">Peran & Umur</label>
+                                <input type="text" value="${char.role} (${char.age})" onchange="updateCharacter(${index}, 'role', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-wider font-semibold text-indigo-400 mb-1 flex items-center justify-between">
+                                    <span>Prompt Visual AI (Leonardo / Midjourney)</span>
+                                    <button onclick="copyText('${escapeQuotes(char.visualPrompt)}')" class="text-indigo-300 hover:underline"><i class="fa-regular fa-copy"></i> Salin</button>
+                                </label>
+                                <textarea rows="3" onchange="updateCharacter(${index}, 'visualPrompt', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 font-mono text-xs text-indigo-200 focus:outline-none focus:border-indigo-500">${char.visualPrompt}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-2 text-[11px] text-slate-500 border-t border-slate-800/60 flex items-center justify-between">
+                        <span>Konsistensi Karakter</span>
+                        <span class="text-emerald-400 font-medium"><i class="fa-solid fa-circle-check"></i> Siap Prompt</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addCharacterCard() {
+            const newChar = {
+                id: Date.now(),
+                name: "Karakter Baru",
+                role: "Peran Pendukung",
+                age: "25 tahun",
+                visualPrompt: "Asian person, 25 years old, casual outfit, cinematic portrait, photorealistic, 8k --ar 16:9",
+                personality: "Netral"
+            };
+            projectData.characters.push(newChar);
+            renderCharacterCards();
+            showToast("Karakter baru ditambahkan!");
+        }
+
+        function updateCharacter(index, field, value) {
+            projectData.characters[index][field] = value;
+            saveToLocalStorage();
+        }
+
+        function deleteCharacter(index) {
+            projectData.characters.splice(index, 1);
+            renderCharacterCards();
+            saveToLocalStorage();
+        }
+
+        function renderSceneLocationCards() {
+            const container = document.getElementById('scene-locations-container');
+            container.innerHTML = '';
+
+            projectData.scenes.forEach((sc, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-900/90 border border-slate-800 p-5 rounded-2xl space-y-3 hover:border-purple-500/40 transition";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <input type="text" value="${sc.name}" onchange="updateSceneLoc(${index}, 'name', this.value)" class="bg-transparent font-bold text-base text-white border-b border-transparent hover:border-slate-700 focus:border-purple-500 focus:outline-none w-full">
+                        <button onclick="deleteSceneLoc(${index})" class="text-slate-500 hover:text-red-400 text-xs p-1"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-wider font-semibold text-slate-500 mb-1">Header Setting</label>
+                        <input type="text" value="${sc.setting}" onchange="updateSceneLoc(${index}, 'setting', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-purple-300 font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-wider font-semibold text-slate-500 mb-1">Detail Suasana / Lighting</label>
+                        <textarea rows="2" onchange="updateSceneLoc(${index}, 'details', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-300 focus:outline-none focus:border-purple-500">${sc.details}</textarea>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addSceneLocationCard() {
+            projectData.scenes.push({
+                id: Date.now(),
+                name: "Lokasi Baru",
+                setting: "INT. LOKASI - HARI",
+                details: "Deskripsi rinci atmosfer adegan dan tata cahaya."
+            });
+            renderSceneLocationCards();
+            showToast("Lokasi baru ditambahkan!");
+        }
+
+        function updateSceneLoc(index, field, value) {
+            projectData.scenes[index][field] = value;
+            saveToLocalStorage();
+        }
+
+        function deleteSceneLoc(index) {
+            projectData.scenes.splice(index, 1);
+            renderSceneLocationCards();
+            saveToLocalStorage();
+        }
+
+        // ================= STORYBOARD & SHOT CREATOR LOGIC =================
+        function renderStoryboardShots() {
+            const container = document.getElementById('storyboard-shots-container');
+            container.innerHTML = '';
+
+            projectData.shots.forEach((shot, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-900/90 border border-slate-800 p-6 rounded-2xl space-y-4 hover:border-indigo-500/30 transition";
+                card.innerHTML = `
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                        <div class="flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">${index + 1}</span>
+                            <input type="text" value="${shot.sceneNo}" onchange="updateShot(${index}, 'sceneNo', this.value)" class="bg-transparent font-bold text-base text-white border-b border-transparent hover:border-slate-700 focus:border-indigo-500 focus:outline-none">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="generateVideoPromptAI(${index})" class="px-3 py-1 bg-indigo-950 hover:bg-indigo-900 text-indigo-300 rounded-lg text-xs font-medium border border-indigo-500/30 transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> Auto-Generate Prompt
+                            </button>
+                            <button onclick="deleteShot(${index})" class="text-slate-500 hover:text-red-400 text-xs p-1.5"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Sudut Kamera (Camera Angle)</label>
+                            <select onchange="updateShot(${index}, 'cameraAngle', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200">
+                                <option value="Close-up (CU)" ${shot.cameraAngle.includes('Close-up') ? 'selected' : ''}>Close-up (CU)</option>
+                                <option value="Extreme Close-up (ECU)" ${shot.cameraAngle.includes('Extreme') ? 'selected' : ''}>Extreme Close-up (ECU)</option>
+                                <option value="Medium Shot (MS)" ${shot.cameraAngle.includes('Medium Shot') ? 'selected' : ''}>Medium Shot (MS)</option>
+                                <option value="Medium Wide Shot (MWS)" ${shot.cameraAngle.includes('Medium Wide') ? 'selected' : ''}>Medium Wide Shot (MWS)</option>
+                                <option value="Wide Shot / Establishing" ${shot.cameraAngle.includes('Wide') ? 'selected' : ''}>Wide Shot / Establishing</option>
+                                <option value="Over The Shoulder (OTS)" ${shot.cameraAngle.includes('Shoulder') ? 'selected' : ''}>Over The Shoulder (OTS)</option>
+                                <option value="Drone / High Angle" ${shot.cameraAngle.includes('High') ? 'selected' : ''}>Drone / High Angle</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Tata Cahaya / Mood</label>
+                            <input type="text" value="${shot.lighting}" onchange="updateShot(${index}, 'lighting', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200" placeholder="Golden Hour / Moody Rain">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Aksi & Gerakan Subjek</label>
+                            <input type="text" value="${shot.action}" onchange="updateShot(${index}, 'action', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200" placeholder="Detail gerakan karakter">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Dialog / Voiceover (Jika ada)</label>
+                        <input type="text" value="${shot.dialogue}" onchange="updateShot(${index}, 'dialogue', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 font-mono">
+                    </div>
+
+                    <!-- Copy Prompt Boxes -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <!-- Video AI Prompt -->
+                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800/80 space-y-2">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="font-semibold text-indigo-400 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-video text-xs"></i> Prompt Text-to-Video / Image-to-Video
+                                </span>
+                                <button onclick="copyText('${escapeQuotes(shot.videoPrompt)}')" class="text-xs text-indigo-300 hover:text-white flex items-center gap-1 bg-indigo-950/60 px-2 py-0.5 rounded border border-indigo-500/20">
+                                    <i class="fa-regular fa-copy"></i> Salin Prompt Video
+                                </button>
+                            </div>
+                            <textarea rows="3" onchange="updateShot(${index}, 'videoPrompt', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 font-mono text-xs text-slate-300 focus:outline-none focus:border-indigo-500">${shot.videoPrompt}</textarea>
+                        </div>
+
+                        <!-- Voiceover / Audio Prompt -->
+                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800/80 space-y-2">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="font-semibold text-emerald-400 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-microphone text-xs"></i> Petunjuk Voiceover & Emosi (ElevenLabs)
+                                </span>
+                                <button onclick="copyText('${escapeQuotes(shot.voicePrompt)}')" class="text-xs text-emerald-300 hover:text-white flex items-center gap-1 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/20">
+                                    <i class="fa-regular fa-copy"></i> Salin Voice Guide
+                                </button>
+                            </div>
+                            <textarea rows="3" onchange="updateShot(${index}, 'voicePrompt', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 font-mono text-xs text-slate-300 focus:outline-none focus:border-emerald-500">${shot.voicePrompt}</textarea>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addNewShotCard() {
+            projectData.shots.push({
+                id: Date.now(),
+                sceneNo: `Adegan ${projectData.shots.length + 1} - Shot 1`,
+                cameraAngle: "Medium Shot (MS)",
+                lighting: "Cinematic Lighting",
+                action: "Karakter berbicara dengan emosi hangat.",
+                dialogue: "DIALOG BARU: 'Tuliskan dialog di sini...'",
+                videoPrompt: "Cinematic medium shot of an Asian actor in dramatic lighting, 8k resolution, smooth camera movement --ar 16:9",
+                voicePrompt: "Suara hangat, tenang, intonasi emosional."
+            });
+            renderStoryboardShots();
+            showToast("Shot baru ditambahkan!");
+        }
+
+        function updateShot(index, field, value) {
+            projectData.shots[index][field] = value;
+            saveToLocalStorage();
+        }
+
+        function deleteShot(index) {
+            projectData.shots.splice(index, 1);
+            renderStoryboardShots();
+            saveToLocalStorage();
+        }
+
+        function generateVideoPromptAI(index) {
+            const shot = projectData.shots[index];
+            const angle = shot.cameraAngle || "Medium Shot";
+            const light = shot.lighting || "Cinematic Natural Lighting";
+            const act = shot.action || "Character moving gracefully";
+
+            const generatedPrompt = `Cinematic ${angle}, ${act}, setting with ${light}, hyperrealistic details, film grain 35mm, shot on ARRI Alexa, 8k resolution, photorealistic masterpiece --ar 16:9`;
+            
+            projectData.shots[index].videoPrompt = generatedPrompt;
+            renderStoryboardShots();
+            showToast("Prompt Video AI berhasil dioptimalkan!");
+        }
+
+        // ================= AI DIRECTORY LOGIC =================
+        function renderAIDirectory(filterCategory = 'all') {
+            const grid = document.getElementById('ai-directory-grid');
+            grid.innerHTML = '';
+
+            const filtered = filterCategory === 'all' 
+                ? aiToolsData 
+                : aiToolsData.filter(t => t.category === filterCategory);
+
+            filtered.forEach(tool => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-900/90 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between hover:border-indigo-500/40 transition group";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-slate-800 text-indigo-400 flex items-center justify-center text-lg border border-slate-700 group-hover:bg-indigo-600 group-hover:text-white transition">
+                                    <i class="fa-solid ${tool.icon}"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-white text-base group-hover:text-indigo-300 transition">${tool.name}</h3>
+                                    <span class="text-[10px] px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800/40">${tool.badge}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed mb-4">${tool.desc}</p>
+                    </div>
+                    <a href="${tool.url}" target="_blank" class="w-full py-2 bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white text-xs font-semibold rounded-xl text-center transition flex items-center justify-center gap-2">
+                        Buka Situs Tool <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    </a>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterTools(category) {
+            document.querySelectorAll('.tool-filter-btn').forEach(btn => {
+                btn.className = "tool-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700";
+            });
+            event.target.className = "tool-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 text-white";
+            renderAIDirectory(category);
+        }
+
+        // ================= EXPORT & PREVIEW LOGIC =================
+        function updateExportPreview() {
+            syncStateFromUI();
+            const preview = document.getElementById('export-preview-content');
+
+            let markdown = `# RINGKASAN PRODUKSI FILM SHORT DRAMA
+JUDUL: ${projectData.title}
+GENRE: ${projectData.genre}
+TONE: ${projectData.tone}
+DURASI TARGET: ${projectData.duration}
+
+==================================================
+1. NASKAH LENGKAP
+==================================================
+${projectData.scriptContent}
+
+==================================================
+2. DAFTAR KARAKTER VISUAL
+==================================================
+`;
+
+            projectData.characters.forEach((c, i) => {
+                markdown += `\n[Karakter ${i+1}] ${c.name} (${c.role})\nPrompt AI: ${c.visualPrompt}\n`;
+            });
+
+            markdown += `\n==================================================\n3. STORYBOARD & PROMPT VIDEO SHOT LIST\n==================================================\n`;
+
+            projectData.shots.forEach((s, i) => {
+                markdown += `\nSHOT ${i+1}: ${s.sceneNo}\nSudut Kamera: ${s.cameraAngle} | Cahaya: ${s.lighting}\nDialog: ${s.dialogue}\nPrompt Video AI: ${s.videoPrompt}\nVoiceover Guide: ${s.voicePrompt}\n---`;
+            });
+
+            preview.innerText = markdown;
+        }
+
+        function exportToMarkdown() {
+            syncStateFromUI();
+            updateExportPreview();
+            const text = document.getElementById('export-preview-content').innerText;
+            const blob = new Blob([text], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${slugify(projectData.title || 'naskah-drama')}-produksi.md`;
+            a.click();
+            showToast("Dokumen Markdown berhasil diunduh!");
+        }
+
+        function exportToJSON() {
+            syncStateFromUI();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(projectData, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `${slugify(projectData.title || 'projek')}-backup.json`);
+            dlAnchor.click();
+            showToast("Backup JSON berhasil diunduh!");
+        }
+
+        function importFromJSON(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    projectData = parsed;
+                    syncUIFromState();
+                    renderAllSections();
+                    showToast("Projek berhasil diimpor dari file JSON!");
+                } catch (err) {
+                    alert("File JSON tidak valid!");
+                }
+            };
+            fileReader.readAsText(event.target.files[0]);
+        }
+
+        function printFormattedDoc() {
+            syncStateFromUI();
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>${projectData.title} - Dokumen Produksi</title>
+                    <style>
+                        body { font-family: sans-serif; padding: 40px; line-height: 1.6; color: #111; }
+                        h1 { border-bottom: 2px solid #333; padding-bottom: 8px; }
+                        h2 { margin-top: 24px; color: #4f46e5; }
+                        pre { background: #f4f4f5; padding: 16px; border-radius: 8px; white-space: pre-wrap; font-family: monospace; }
+                        .card { border: 1px solid #ddd; padding: 12px; margin-bottom: 12px; border-radius: 6px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>${projectData.title}</h1>
+                    <p><strong>Genre:</strong> ${projectData.genre} | <strong>Tone:</strong> ${projectData.tone}</p>
+                    <h2>1. Naskah Drama</h2>
+                    <pre>${projectData.scriptContent}</pre>
+                    <h2>2. Karakter</h2>
+                    ${projectData.characters.map(c => `<div class="card"><strong>${c.name}</strong> (${c.role})<br><em>Prompt:</em> ${c.visualPrompt}</div>`).join('')}
+                    <h2>3. Storyboard Shots</h2>
+                    ${projectData.shots.map(s => `<div class="card"><strong>${s.sceneNo}</strong> - ${s.cameraAngle}<br>${s.dialogue}<br><em>Prompt Video:</em> ${s.videoPrompt}</div>`).join('')}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // ================= UTILITY FUNCTIONS =================
+        function copyToClipboard(elementId) {
+            const el = document.getElementById(elementId);
+            el.select();
+            document.execCommand('copy');
+            showToast("Teks berhasil disalin ke clipboard!");
+        }
+
+        function copyText(text) {
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            showToast("Prompt berhasil disalin!");
+        }
+
+        function escapeQuotes(str) {
+            return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        function slugify(text) {
+            return text.toString().toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w\-]+/g, '')
+                .replace(/\-\-+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '');
+        }
+    </script>
+</body>
+</html>
